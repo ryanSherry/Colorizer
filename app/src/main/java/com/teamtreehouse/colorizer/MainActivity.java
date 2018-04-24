@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -35,12 +36,66 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuItem menuItem = menu.add("Next Image");
-        menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menuItem.setIcon(R.drawable.ic_add_a_photo_black_24dp);
-        menuItem.getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+//        MenuItem menuItem = menu.add("Next Image");
+//        menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+//        menuItem.setIcon(R.drawable.ic_add_a_photo_black_24dp);
+//        menuItem.getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+        getMenuInflater().inflate(R.menu.options_menu,menu);
+
+        Drawable nextImageDrawable = menu.findItem(R.id.nextImage).getIcon();
+        nextImageDrawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+
+        menu.findItem(R.id.red).setChecked(red);
+        menu.findItem(R.id.green).setChecked(green);
+        menu.findItem(R.id.blue).setChecked(blue);
+
+        menu.setGroupVisible(R.id.colorGroup, color);
+
         return true;
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nextImage:
+                imageIndex++;
+                if (imageIndex >= imageResIds.length)
+                    imageIndex = 0;
+                loadImage();
+                break;
+
+            case R.id.color:
+                color = !color;
+                updateSaturation();
+                invalidateOptionsMenu();
+                break;
+
+            case R.id.red:
+                red = !red;
+                updateColors();
+                item.setChecked(red);
+                break;
+
+            case R.id.green:
+                green = !green;
+                updateColors();
+                item.setChecked(green);
+                break;
+
+            case R.id.blue:
+                blue = !blue;
+                updateColors();
+                item.setChecked(blue);
+                break;
+
+            case R.id.reset:
+                imageView.clearColorFilter();
+                red = green = blue = color = true;
+                invalidateOptionsMenu();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void updateSaturation() {
